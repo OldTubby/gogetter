@@ -1,28 +1,27 @@
+//Server Side Rendering
+
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 
-export default function Home({ articles }) {
-  return (
-    <div>
-      <Head>
-        <title>Oh Shit</title>
-        <meta name='poop' />
-      </Head>
-      {articles.map((article) => (
-        <h3>{article.title}</h3>
-      ))}
-    </div>
-  );
-}
-
-export const getStaticProps = async () => {
-  const res = await fetch(
-    `https://jsonplaceholder.typicode.com/posts?_limit=6`
-  );
-  const articles = await res.json();
+export async function getServerSideProps() {
+  const resp = await fetch('https://api.wheretheiss.at/v1/satellites/25544');
 
   return {
     props: {
-      articles,
+      iss: await resp.json(),
     },
   };
-};
+}
+
+export default function Home({ iss }) {
+  return (
+    <div key={iss.id}>
+      <h1>Where is the ISS?</h1>
+      <div>
+        <h4>Latitude: {iss.latitude}</h4>
+        <h4>Longitude: {iss.longitude}</h4>
+      </div>
+    </div>
+  );
+}
